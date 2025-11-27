@@ -8,14 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Layers, FileText, MessageSquare, Eye } from 'lucide-react';
+import { BookOpen, Code, Eye, Package, User } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Area, CartesianGrid, XAxis, AreaChart as RechartsAreaChart } from 'recharts';
+import { Bar, CartesianGrid, XAxis, BarChart as RechartsBarChart } from 'recharts';
 import { useEffect, useState } from 'react';
-import { mockRecentGrades } from '@/lib/data';
+import { mockArticles, mockSubmissions } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { useAuth } from '@/hooks/use-auth';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Submission, SubmissionStatus } from '@/types';
 
 const chartConfig = {
   views: {
@@ -24,58 +26,72 @@ const chartConfig = {
   },
 };
 
+const statusStyles: { [key in SubmissionStatus]: string } = {
+  Submitted: 'bg-yellow-500/10 text-yellow-500',
+  'Under Review': 'bg-blue-500/10 text-blue-500',
+  'Revisions Required': 'bg-orange-500/10 text-orange-500',
+  Accepted: 'bg-green-500/10 text-green-500',
+  Rejected: 'bg-red-500/10 text-red-500',
+  Published: 'bg-purple-500/10 text-purple-500',
+  Draft: 'bg-gray-500/10 text-gray-500'
+};
+
+
 export default function AdminDashboardPage() {
-    const { user } = useAuth();
   const [chartData, setChartData] = useState<Array<{ month: string; views: number }>>([]);
   
   useEffect(() => {
     // Generate chart data on the client side to avoid hydration errors
     const data = [
-      { month: 'Jan', views: 150 },
-      { month: 'Feb', views: 220 },
-      { month: 'Mar', views: 300 },
-      { month: 'Apr', views: 280 },
-      { month: 'May', views: 450 },
-      { month: 'Jun', views: 400 },
+      { month: 'Jan', views: 230 },
+      { month: 'Feb', views: 350 },
+      { month: 'Mar', views: 420 },
+      { month: 'Apr', views: 550 },
+      { month: 'May', views: 680 },
+      { month: 'Jun', views: 890 },
     ];
     setChartData(data);
   }, []);
 
-  const recentContacts = mockRecentGrades; // Re-using for now
+  const recentArticles = mockArticles.slice(0, 5);
+  const totalProjects = 12; // Mock data
+  const totalSkills = 45; // Mock data
+  const totalArticles = mockArticles.length;
+
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+      <h1 className="text-3xl font-bold tracking-tight">Portfolio Dashboard</h1>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
-            <Layers className="h-4 w-4 text-muted-foreground" />
+            <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">+2 from last month</p>
+            <div className="text-2xl font-bold">{totalProjects}</div>
+            <p className="text-xs text-muted-foreground">Showcasing your best work</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Blog Posts</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Skills & Technologies</CardTitle>
+            <Code className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">8</div>
-            <p className="text-xs text-muted-foreground">+1 this month</p>
+            <div className="text-2xl font-bold">{totalSkills}</div>
+            <p className="text-xs text-muted-foreground">Across various domains</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Contact Messages</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Published Articles</CardTitle>
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">5</div>
-            <p className="text-xs text-muted-foreground">2 unread</p>
+            <div className="text-2xl font-bold">{totalArticles}</div>
+            <p className="text-xs text-muted-foreground">Sharing your knowledge</p>
           </CardContent>
         </Card>
         <Card>
@@ -84,8 +100,8 @@ export default function AdminDashboardPage() {
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,823</div>
-            <p className="text-xs text-muted-foreground">+50 in last 7 days</p>
+            <div className="text-2xl font-bold">15,234</div>
+            <p className="text-xs text-muted-foreground">+12% from last month</p>
           </CardContent>
         </Card>
       </div>
@@ -93,12 +109,12 @@ export default function AdminDashboardPage() {
       <div className="grid gap-6 md:grid-cols-5">
         <Card className="md:col-span-3">
           <CardHeader>
-            <CardTitle>Portfolio Views</CardTitle>
-            <CardDescription>Profile view trend over the last 6 months.</CardDescription>
+            <CardTitle>Audience Growth</CardTitle>
+            <CardDescription>Profile views over the last 6 months.</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-64 w-full">
-              <RechartsAreaChart accessibilityLayer data={chartData}>
+              <RechartsBarChart accessibilityLayer data={chartData}>
                 <CartesianGrid vertical={false} stroke="hsl(var(--border) / 0.5)" />
                 <XAxis
                   dataKey="month"
@@ -110,36 +126,44 @@ export default function AdminDashboardPage() {
                     cursor={false}
                     content={<ChartTooltipContent indicator="line" />}
                 />
-                <Area
+                <Bar
                   dataKey="views"
-                  type="natural"
                   fill="var(--color-views)"
-                  fillOpacity={0.4}
-                  stroke="var(--color-views)"
+                  radius={4}
                 />
-              </RechartsAreaChart>
+              </RechartsBarChart>
             </ChartContainer>
           </CardContent>
         </Card>
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle>Recent Contacts</CardTitle>
-            <CardDescription>Latest messages from your contact form.</CardDescription>
+            <CardTitle>Recent Articles</CardTitle>
+            <CardDescription>Your latest published blog posts.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
-            <ul className="space-y-4">
-              {recentContacts.slice(0, 3).map((contact) => (
-                <li key={contact.id} className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{contact.studentName}</p>
-                    <p className="text-sm text-muted-foreground">Subject: {contact.assignment}</p>
-                  </div>
-                  <Button variant="ghost" size="sm">View</Button>
-                </li>
-              ))}
-            </ul>
+             <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Status</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {recentArticles.map((req: Submission) => (
+                        <TableRow key={req.id}>
+                            <TableCell>
+                                <p className="font-medium line-clamp-1">{req.title}</p>
+                                <p className="text-sm text-muted-foreground">{req.journal}</p>
+                            </TableCell>
+                            <TableCell>
+                                <Badge className={statusStyles[req.status]}>{req.status}</Badge>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
              <Button asChild variant="outline">
-              <Link href="/admin-dashboard/leaves">View All Messages</Link>
+              <Link href="/admin-dashboard/blog">View All Articles</Link>
             </Button>
           </CardContent>
         </Card>

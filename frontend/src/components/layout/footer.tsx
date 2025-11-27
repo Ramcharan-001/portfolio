@@ -1,6 +1,6 @@
 
 import Link from 'next/link';
-import { Briefcase } from 'lucide-react';
+import { Logo } from '@/components/icons';
 
 export function Footer() {
   return (
@@ -8,7 +8,7 @@ export function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
           <div className="flex items-center space-x-2">
-            <Briefcase className="h-6 w-6" />
+            <Logo className="h-6 w-6" />
             <span className="font-bold">MyPortfolio</span>
           </div>
           <p className="text-sm text-muted-foreground">

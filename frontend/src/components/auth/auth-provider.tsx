@@ -2,7 +2,7 @@
 
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '@/types';
-import { mockSignIn, mockSignUp, mockSignOut, onMockAuthStateChanged, SignUpCredentials, Credentials } from '@/lib/auth';
+import { signIn as apiSignIn, signUp as apiSignUp, signOut as apiSignOut, onAuthStateChanged, SignUpCredentials, Credentials } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 
 export interface AuthContextType {
@@ -21,7 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onMockAuthStateChanged((user) => {
+    const unsubscribe = onAuthStateChanged((user) => {
       setUser(user);
       setLoading(false);
     });
@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = async (credentials: Credentials) => {
     setLoading(true);
     try {
-      const loggedInUser = await mockSignIn(credentials);
+      const loggedInUser = await apiSignIn(credentials);
       setUser(loggedInUser);
       return loggedInUser;
     } finally {
@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUp = async (credentials: SignUpCredentials) => {
     setLoading(true);
     try {
-      const newUser = await mockSignUp(credentials);
+      const newUser = await apiSignUp(credentials);
       setUser(newUser);
       return newUser;
     } finally {
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     setLoading(true);
     try {
-      await mockSignOut();
+      await apiSignOut();
       setUser(null);
       router.push('/login');
     } finally {

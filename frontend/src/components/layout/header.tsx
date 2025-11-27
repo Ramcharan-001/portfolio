@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Briefcase } from 'lucide-react';
+import { Logo } from '@/components/icons';
 import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -16,11 +16,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { LifeBuoy, LogOut, User as UserIcon } from 'lucide-react';
+import { ThemeToggle } from '../theme-toggle';
 
 export function Header() {
   const { user, loading, signOut } = useAuth();
   
-  const getInitials = (name: string) => {
+  const getInitials = (name: string | undefined) => {
+    if (!name) return 'A';
     const names = name.split(' ');
     if (names.length > 1) {
       return `${names[0][0]}${names[1][0]}`;
@@ -28,29 +30,30 @@ export function Header() {
     return names[0].substring(0, 2);
   }
 
-  const dashboardHref = user?.role === 'Admin' ? '/admin-dashboard' : '/employee-dashboard';
+  const dashboardHref = '/admin-dashboard';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
       <div className="container flex h-16 items-center">
         <div className="mr-4 flex">
           <Link href="/" className="flex items-center space-x-2">
-            <Briefcase className="h-6 w-6 text-primary" />
+            <Logo className="h-6 w-6 text-primary" />
             <span className="font-bold">MyPortfolio</span>
           </Link>
         </div>
         <nav className="hidden items-center space-x-6 text-sm font-medium md:flex">
-          <Link href="/employee-dashboard/leaves" className="transition-colors hover:text-foreground/80 text-foreground/60">
+          <Link href="#features" className="transition-colors hover:text-foreground/80 text-foreground/60">
+            Features
+          </Link>
+          <Link href="#" className="transition-colors hover:text-foreground/80 text-foreground/60">
             Projects
           </Link>
-          <Link href="/employee-dashboard/payroll" className="transition-colors hover:text-foreground/80 text-foreground/60">
-            Blog
-          </Link>
-           <Link href="/employee-dashboard/profile" className="transition-colors hover:text-foreground/80 text-foreground/60">
+           <Link href="#" className="transition-colors hover:text-foreground/80 text-foreground/60">
             Contact
           </Link>
         </nav>
         <div className="flex flex-1 items-center justify-end space-x-4">
+           <ThemeToggle />
           {loading ? (
             <Skeleton className="h-8 w-20" />
           ) : user ? (

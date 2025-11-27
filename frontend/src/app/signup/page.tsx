@@ -36,7 +36,7 @@ export default function SignUpPage() {
       name: '',
       email: '',
       password: '',
-      role: 'Admin',
+      role: 'Admin', // Default to Admin, as it's a personal portfolio
     },
   });
 
@@ -46,13 +46,10 @@ export default function SignUpPage() {
       const user = await signUp(values);
       toast({
         title: 'Account Created',
-        description: 'Your EduTrack account has been successfully created.',
+        description: 'Your portfolio account has been successfully created.',
       });
-      if (user.role === 'Admin') {
-        router.push('/admin-dashboard');
-      } else {
-        router.push('/employee-dashboard');
-      }
+      // For a portfolio site, users go to the admin dash to edit their content.
+      router.push('/admin-dashboard');
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -70,13 +67,13 @@ export default function SignUpPage() {
         <div className="mb-4 flex justify-center">
             <Link href="/" className="flex items-center space-x-2">
                 <Logo className="h-8 w-8" />
-                <span className="text-2xl font-bold">EduTrack</span>
+                <span className="text-2xl font-bold">MyPortfolio</span>
             </Link>
         </div>
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">Create an Account</CardTitle>
-            <CardDescription>Get started with EduTrack today.</CardDescription>
+            <CardTitle className="text-2xl">Create Your Account</CardTitle>
+            <CardDescription>Get started with your personal portfolio today.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -124,7 +121,8 @@ export default function SignUpPage() {
                   control={form.control}
                   name="role"
                   render={({ field }) => (
-                    <FormItem>
+                    // Hide role selection for portfolio site, default to Admin
+                    <FormItem className="hidden">
                       <FormLabel>Account Type</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
@@ -133,8 +131,8 @@ export default function SignUpPage() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Admin">Administrator</SelectItem>
-                          <SelectItem value="Student">Student</SelectItem>
+                          <SelectItem value="Admin">Portfolio Owner</SelectItem>
+                          <SelectItem value="Student" disabled>Visitor (Not used)</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

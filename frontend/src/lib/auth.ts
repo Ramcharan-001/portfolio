@@ -35,90 +35,91 @@ function notifyListeners() {
   listeners.forEach(listener => listener(currentUser));
 }
 
+function handleAuthSuccess(user: User) {
+    currentUser = user;
+    try {
+        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(currentUser));
+    } catch (error) {
+        console.error("Failed to save user to localStorage", error);
+    }
+    notifyListeners();
+    return user;
+}
+
 // --- Auth Functions ---
 
 /**
- * Signs a user in by finding them in the mock data.
+ * Signs a user in by calling the backend API.
  * @param credentials The user's email and password.
  * @returns A promise that resolves with the User object.
  */
-export const mockSignIn = async (credentials: Credentials): Promise<User> => {
-  console.log('Attempting sign in with:', credentials);
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const user = mockUsers.find(u => u.email.toLowerCase() === credentials.email.toLowerCase());
-      if (user) {
-        currentUser = user;
-        try {
-          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(currentUser));
-        } catch (error) {
-          console.error("Failed to save user to localStorage", error);
-        }
-        notifyListeners();
-        resolve(user);
-      } else {
-        reject(new Error("Invalid email or password."));
-      }
-    }, 500);
-  });
+export const signIn = async (credentials: Credentials): Promise<User> => {
+    const response = await fetch(`${API_BASE_URL}/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Login failed.");
+    }
+
+    const user = await response.json();
+    return handleAuthSuccess(user);
 };
 
 /**
- * Signs a new user up.
+ * Signs a new user up by calling the backend API.
  * @param credentials The new user's details.
  * @returns A promise that resolves with the new User object.
  */
-export const mockSignUp = async (credentials: SignUpCredentials): Promise<User> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const existingUser = mockUsers.find(u => u.email.toLowerCase() === credentials.email.toLowerCase());
-      if (existingUser) {
-        reject(new Error("An account with this email already exists."));
-        return;
-      }
-      
-      const newUser: User = {
-        uid: `user${Math.floor(Math.random() * 10000)}`,
-        name: credentials.name,
-        email: credentials.email,
-        role: credentials.role,
-        department: credentials.role === 'Student' ? 'Grade 10' : 'N/A', // Example default
-        gpa: 0,
-        joinedDate: new Date().toLocaleDateString('en-CA'), // YYYY-MM-DD
-        avatarUrl: `https://i.pravatar.cc/150?u=${credentials.email}`,
-      };
+export const signUp = async (credentials: SignUpCredentials): Promise<User> => {
+    const response = await fetch(`${API_BASE_URL}/signup`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+    });
 
-      mockUsers.push(newUser);
-      currentUser = newUser;
-      try {
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(currentUser));
-      } catch (error) {
-        console.error("Failed to save user to localStorage", error);
-      }
-      notifyListeners();
-      resolve(newUser);
-    }, 500);
-  });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Sign up failed.");
+    }
+    
+    const user = await response.json();
+    return handleAuthSuccess(user);
 };
 
 
 /**
- * Simulates a user signing out.
+ * Signs a user out by calling the backend API.
  * @returns A promise that resolves when sign-out is complete.
  */
-export const mockSignOut = (): Promise<void> => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            currentUser = null;
-            try {
-                localStorage.removeItem(AUTH_STORAGE_KEY);
-            } catch (error) {
-                console.error("Failed to remove user from localStorage", error);
-            }
-            notifyListeners();
-            resolve();
-        }, 300);
-    });
+export const signOut = async (): Promise<void> => {
+    // We can optimistically remove the user from the client.
+    currentUser = null;
+    try {
+        localStorage.removeItem(AUTH_STORAGE_KEY);
+    } catch (error) {
+        console.error("Failed to remove user from localStorage", error);
+    }
+    notifyListeners();
+    
+    // Attempt to sign out from the server, but don't block on it.
+    try {
+        await fetch(`${API_BASE_URL}/logout`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    } catch (error) {
+        console.error("Failed to sign out from server:", error);
+    }
 };
 
 
@@ -127,7 +128,7 @@ export const mockSignOut = (): Promise<void> => {
  * @param callback The function to call when the auth state changes.
  * @returns An unsubscribe function.
  */
-export const onMockAuthStateChanged = (callback: (user: User | null) => void): (() => void) => {
+export const onAuthStateChanged = (callback: (user: User | null) => void): (() => void) => {
   // Immediately call the listener with the current user state
   callback(currentUser);
 
@@ -142,3 +143,6 @@ export const onMockAuthStateChanged = (callback: (user: User | null) => void): (
     }
   };
 };
+
+// Renaming mock functions for backward compatibility with components that might still use them.
+export { signIn as mockSignIn, signUp as mockSignUp, signOut as mockSignOut, onAuthStateChanged as onMockAuthStateChanged };

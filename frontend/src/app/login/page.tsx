@@ -43,11 +43,8 @@ export default function LoginPage() {
         title: 'Login Successful',
         description: `Welcome back, ${user.name}!`,
       });
-      if (user.role === 'Admin') {
-        router.push('/admin-dashboard');
-      } else {
-        router.push('/employee-dashboard');
-      }
+      // For a portfolio site, both admins and "students" (generic users) might go to the admin dash to edit.
+      router.push('/admin-dashboard');
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -66,11 +63,11 @@ export default function LoginPage() {
             <div className="mb-4 flex justify-center">
                 <Link href="/" className="flex items-center space-x-2">
                     <Logo className="h-8 w-8" />
-                    <span className="text-2xl font-bold">EduTrack</span>
+                    <span className="text-2xl font-bold">MyPortfolio</span>
                 </Link>
             </div>
             <CardTitle className="text-2xl text-center">Login</CardTitle>
-            <CardDescription className="text-center">Enter your credentials to access the portal</CardDescription>
+            <CardDescription className="text-center">Access your portfolio dashboard</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>

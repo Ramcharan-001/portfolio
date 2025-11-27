@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
-import { Briefcase } from 'lucide-react';
+import { Logo } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,23 +18,23 @@ import {
 } from '@/components/ui/dropdown-menu';
 import {
   LayoutDashboard,
-  Users,
-  FileText,
-  BarChart,
   LogOut,
   ChevronDown,
   Loader2,
-  Layers,
-  MessageSquare,
+  Package,
+  BookOpen,
+  Contact,
+  Code,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/admin-dashboard', icon: <LayoutDashboard className="h-5 w-5" />, label: 'Dashboard' },
-  { href: '/admin-dashboard/employees', icon: <Layers className="h-5 w-5" />, label: 'Projects' },
-  { href: '/admin-dashboard/payroll', icon: <FileText className="h-5 w-5" />, label: 'Blog' },
-  { href: '/admin-dashboard/leaves', icon: <MessageSquare className="h-5 w-5" />, label: 'Contacts' },
+  { href: '/admin-dashboard/projects', icon: <Package className="h-5 w-5" />, label: 'Projects' },
+  { href: '/admin-dashboard/skills', icon: <Code className="h-5 w-5" />, label: 'Skills' },
+  { href: '/admin-dashboard/blog', icon: <BookOpen className="h-5 w-5" />, label: 'Blog' },
+  { href: '/admin-dashboard/contact', icon: <Contact className="h-5 w-5" />, label: 'Contact' },
 ];
 
 function TopNav() {
@@ -42,6 +42,7 @@ function TopNav() {
   const { user, signOut } = useAuth();
 
   const getInitials = (name: string) => {
+    if (!name) return 'A';
     const names = name.split(' ');
     if (names.length > 1) {
       return `${names[0][0]}${names[1][0]}`;
@@ -54,8 +55,8 @@ function TopNav() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-6">
                 <Link href="/" className="flex items-center gap-2">
-                    <Briefcase className="size-7 text-primary" />
-                    <span className="text-lg font-semibold">{user?.name}'s Portfolio</span>
+                    <Logo className="size-7 text-primary" />
+                    <span className="text-lg font-semibold">MyPortfolio</span>
                 </Link>
                 <nav className="hidden items-center gap-2 md:flex">
                     {navItems.map((item) => (
@@ -64,7 +65,7 @@ function TopNav() {
                         href={item.href}
                         className={cn(
                             "rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                            pathname === item.href
+                            pathname.startsWith(item.href)
                             ? "bg-primary/10 text-primary"
                             : "text-muted-foreground hover:text-foreground"
                         )}
@@ -81,7 +82,7 @@ function TopNav() {
                             <div className="flex items-center gap-3">
                             <Avatar className="size-8">
                                 <AvatarImage src={user?.avatarUrl} />
-                                <AvatarFallback>{user ? getInitials(user.name) : 'A'}</AvatarFallback>
+                                <AvatarFallback>{getInitials(user?.name || '')}</AvatarFallback>
                             </Avatar>
                             <div className="hidden text-left sm:block">
                                 <p className="text-sm font-medium">{user?.name}</p>
@@ -111,7 +112,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && (!user || user.role !== 'Admin')) {
+    if (!loading && !user) {
       router.replace('/login');
     }
   }, [user, loading, router]);

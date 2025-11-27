@@ -4,6 +4,7 @@ import { Inter, Source_Code_Pro } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/components/auth/auth-provider';
+import { ThemeProvider } from '@/components/theme-provider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -19,7 +20,7 @@ const sourceCodePro = Source_Code_Pro({
 
 export const metadata: Metadata = {
   title: 'MyPortfolio - Showcase Your Work',
-  description: 'A personal portfolio website to showcase skills, projects, and achievements.',
+  description: 'A personal portfolio website to showcase your skills, projects, and achievements.',
 };
 
 export default function RootLayout({
@@ -29,11 +30,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${sourceCodePro.variable}`}>
-      <body className="font-body antialiased bg-background">
-        <AuthProvider>
-            {children}
-          <Toaster />
-        </AuthProvider>
+      <body className="font-body antialiased">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+              {children}
+            <Toaster />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

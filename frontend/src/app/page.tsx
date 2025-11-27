@@ -4,10 +4,10 @@
 import Link from 'next/link';
 import {
   ArrowRight,
-  Briefcase,
-  Layers,
-  Mail,
-  TrendingUp,
+  Code,
+  LayoutGrid,
+  BookOpen,
+  Award,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,24 +18,24 @@ export default function Home() {
 
   const features = [
     {
-      icon: <Layers className="h-8 w-8 text-primary" />,
+      icon: <LayoutGrid className="h-8 w-8 text-primary" />,
       title: 'Project Galleries',
-      description: 'Display your work in beautifully organized galleries with detailed descriptions and images.',
+      description: 'Showcase your work with stunning project galleries, complete with descriptions, images, and links.',
     },
     {
-      icon: <Briefcase className="h-8 w-8 text-primary" />,
+      icon: <Code className="h-8 w-8 text-primary" />,
+      title: 'Skills & Expertise',
+      description: 'Highlight your technical and soft skills to show potential employers what you can do.',
+    },
+    {
+      icon: <BookOpen className="h-8 w-8 text-primary" />,
       title: 'Blog & Articles',
-      description: 'Share your expertise and insights with a built-in blog to attract and engage your audience.',
+      description: 'Share your knowledge and insights by publishing articles and case studies on your personal blog.',
     },
     {
-      icon: <Mail className="h-8 w-8 text-primary" />,
-      title: 'Contact Form',
-      description: 'Easily connect with potential employers and clients through a secure, integrated contact form.',
-    },
-    {
-      icon: <TrendingUp className="h-8 w-8 text-primary" />,
-      title: 'SEO Optimized',
-      description: 'Increase your visibility on search engines and attract more visitors to your portfolio.',
+      icon: <Award className="h-8 w-8 text-primary" />,
+      title: 'Achievements & Resume',
+      description: 'List your accomplishments, education, and work experience in a clean, professional format.',
     },
   ];
 
@@ -48,10 +48,10 @@ export default function Home() {
             <div className="grid grid-cols-1 items-center gap-12">
               <div className="space-y-6 text-center">
                 <h1 className="font-headline text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-                  Showcase Your Skills & Projects
+                  Showcase Your Talent
                 </h1>
                 <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-                  Create a stunning personal portfolio to present your work, share your story, and connect with new opportunities.
+                  A beautifully simple and powerful way to build your personal portfolio. Present your projects, skills, and story to the world.
                 </p>
                 <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
                   <Button asChild size="lg">
@@ -72,10 +72,10 @@ export default function Home() {
           <div className="container mx-auto px-4">
             <div className="mx-auto mb-16 max-w-3xl text-center">
               <h2 className="font-headline text-3xl font-bold tracking-tight md:text-4xl">
-                Everything You Need to Build Your Brand
+                Everything You Need to Stand Out
               </h2>
               <p className="mt-4 text-lg text-muted-foreground">
-                Our platform provides the tools to create a professional and compelling online presence.
+                MyPortfolio provides the tools to build a professional online presence that gets you noticed.
               </p>
             </div>
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
